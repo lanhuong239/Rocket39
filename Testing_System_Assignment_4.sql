@@ -254,97 +254,90 @@ INSERT INTO ExamQuestion (exam_id, question_id) VALUES
     (9, 9),
     (10, 10);
     
--- q2
-select * 
-from Department;
+-- q1: Viết lệnh để lấy ra danh sách nhân viên và thông tin phòng ban của họ
+select *
+from Account a
+left join Department d on a.department_id = d.department_id
 
--- lấy ra id của phòng ban "Sale"
-select department_id
-from Department
-where department_name = 'Sale';
-
--- q4: lấy ra thông tin account có full name dài nhất
--- hàm MAX thường được sử dụng để lấy giá trị lớn nhất từ một cột số
+-- q2: Viết lệnh để lấy ra thông tin các account được tạo sau ngày 2023-01-03
 select *
 from Account
-ORDER BY LENGTH(full_name) DESC
-LIMIT 1;
+where create_date > '2023-01-03';
 
-SELECT *
-FROM Account
-WHERE LENGTH(full_name) in (SELECT MAX(LENGTH(full_name)) FROM Account);
+-- q3: Viết lệnh để lấy ra tất cả các developer
+SELECT a.full_name, a.position_id, p.position_name
+FROM Account a 
+INNER JOIN `Position` p ON a.position_id = p.position_id
+WHERE p.position_name LIKE '%Developer%';
 
--- q5: Lấy ra thông tin account có full name dài nhất và thuộc phòng ban có id = 3
-SELECT *
-FROM Account
-WHERE 
-LENGTH(full_name) = (SELECT MAX(LENGTH(full_name)) FROM Account)
-and department_id = 3;
-
--- q6: Lấy ra tên group đã tham gia trước ngày 20/12/2019
-SELECT DISTINCT g.group_name
-FROM `Group` g
-JOIN GroupAccount ga ON g.group_id = ga.group_id
-JOIN Account a ON ga.account_id = a.account_id
-WHERE ga.join_date < '2019-12-20';
-
--- q7: Lấy ra ID của question có >= 4 câu trả lời
-
-select question_id 
-from (
-select question_id, count(answer_id) count_answer
-from Answer
-group by 1) count
-where count_answer >=4;
-
-SELECT question_id
-FROM Answer
-GROUP BY question_id
-HAVING COUNT(answer_id) >= 4;
-
--- q8: Lấy ra các mã đề thi có thời gian thi >= 60 phút và được tạo trước ngày 2023-01-05
-select `code`
-from Exam
-where duration >= 60 and create_date < '2023-01-05';
-
--- q9: Lấy ra 5 group được tạo gần đây nhất
+-- q4: Viết lệnh để lấy ra danh sách các phòng ban có >3 nhân viên
 select *
-from `Group`
-order by create_date desc
-limit 5;
+from Account 
+group by department_id
+having count(account_id) > 3
 
--- q10: Đếm số nhân viên thuộc department có id = 2
-select count(*) 
-from `Account`
-where department_id = 2;
+-- q5: Viết lệnh để lấy ra danh sách câu hỏi được sử dụng trong đề thi nhiều nhất
+select question_id, count(exam_id)
+from ExamQuestion
+group by question_id
+order by count(exam_id) desc
+limit 1
 
--- q11: Lấy ra nhân viên có tên bắt đầu bằng chữ "E" và kết thúc bằng chữ "e"
-select *
-from `Account`
-where full_name like 'E%e';
-
--- q12: Xóa tất cả các exam được tạo trước ngày 20/12/2019
-delete 
-from Exam
-where create_date < '2023-01-02';
-
--- q13: Xóa tất cả các question có nội dung bắt đầu bằng từ "What"
-SET SQL_SAFE_UPDATES = 0;
-SET FOREIGN_KEY_CHECKS=0;
-delete 
+-- q6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question
+select category_id, count(question_id)
 from Question
-where content like 'What%';
+group by category_id
+
+-- q7:Thông kê mỗi Question được sử dụng trong bao nhiêu Exam
+select question_id, count(exam_id)
+from ExamQuestion
+group by question_id
+
+-- q8: Lấy ra Question có nhiều câu trả lời nhất
+select question_id
+from Answer
+group by question_id
+order by count(answer_id) desc
+limit 1
+
+-- q9: Thống kê số lượng account trong mỗi group
+select account_id, count(group_id)
+from GroupAccount
+group by account_id
+
+-- q10: Tìm chức vụ có ít người nhất
+select position_id
+from Account
+group by position_id
+order by count(account_id)
+limit 1
+
+-- q11:Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM
+SELECT 
+    department_id, 
+    COUNT(CASE WHEN position_name LIKE '%Account%' THEN 1 END) AS account_count,
+    COUNT(CASE WHEN position_name LIKE '%Developer%' THEN 1 END) AS developer_count,
+    COUNT(CASE WHEN position_name LIKE '%Manager%' THEN 1 END) AS manager_count
+FROM 
+    Account a
+INNER JOIN 
+    Position p ON a.position_id = p.position_id
+GROUP BY 
+    department_id;
+
+-- q12: Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của question, loại câu hỏi, ai là người tạo ra câu hỏi, câu trả lời là gì, ...
+select q.question_id, q.content, cq.category_name , tq.type_name as 'Type name', a.full_name as 'Creator name'
+from
+	Question q
+inner join
+	CategoryQuestion  cq on cq.category_id = q.category_id
+inner join 
+	TypeQuestion tq on tq.type_id = q.type_id
+inner join 
+	Account a on a.account_id = q.creator_id
 
 
--- q14: Update thông tin của account có id = 5 thành tên "Nguyễn Bá Lộc" và email thành loc.nguyenba@vti.com.vn
-update Account
-set full_name = 'Nguyễn Bá Lộc', email = 'loc.nguyenba@vti.com.vn'
-where account_id = 5;
 
--- q15: update account có id = 5 sẽ thuộc group có id = 4
-update GroupAccount
-set group_id = 4
-where account_id = 5;
-
-select * from Account;
-select * from Exam;
+select * from ExamQuestion;
+select * from Department;
+select * from Position;
