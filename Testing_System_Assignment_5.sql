@@ -140,7 +140,7 @@ INSERT INTO `Position` (position_name) VALUES
 -- Insert into Account table
 INSERT INTO Account (email, user_name, full_name, department_id, position_id, create_date) VALUES
     ('john.doe@example.com', 'john_doe', 'John Doe', 1, 1, '2023-01-01'),
-    ('alice.smith@example.com', 'alice_smith', 'Alice Smith', 2, 2, '2023-01-02'),
+    ('alice.smith@example.com', 'alice_smith', 'Alice Smith', 3, 2, '2023-01-02'),
     ('bob.jones@example.com', 'bob_jones', 'Bob Jones', 3, 3, '2023-01-03'),
     ('emily.white@example.com', 'emily_white', 'Emily White', 4, 4, '2023-01-04'),
     ('charlie.brown@example.com', 'charlie_brown', 'Charlie Brown', 5, 5, '2023-01-05'),
@@ -254,96 +254,106 @@ INSERT INTO ExamQuestion (exam_id, question_id) VALUES
     (9, 9),
     (10, 10);
     
--- q1: Viết lệnh để lấy ra danh sách nhân viên và thông tin phòng ban của họ
-select *
+-- q1: Tạo view có chứa danh sách nhân viên thuộc phòng ban It
+Drop view if exists sale_employees;
+Create view sale_employees as
+select a.full_name, d.department_name
 from Account a
-left join Department d on a.department_id = d.department_id
+inner join Department d on a.department_id = d.department_id
+where d.department_name like '%It%';
 
--- q2: Viết lệnh để lấy ra thông tin các account được tạo sau ngày 2023-01-03
-select *
-from Account
-where create_date > '2023-01-03';
+Select *
+from sale_employees
 
--- q3: Viết lệnh để lấy ra tất cả các developer
-SELECT a.full_name, a.position_id, p.position_name
-FROM Account a 
-INNER JOIN `Position` p ON a.position_id = p.position_id
-WHERE p.position_name LIKE '%Developer%';
-
--- q4: Viết lệnh để lấy ra danh sách các phòng ban có >3 nhân viên
-select *
-from Account 
-group by department_id
-having count(account_id) > 3
-
--- q5: Viết lệnh để lấy ra danh sách câu hỏi được sử dụng trong đề thi nhiều nhất
-select question_id, count(exam_id)
-from ExamQuestion
-group by question_id
-order by count(exam_id) desc
-limit 1
-
--- q6: Thông kê mỗi category Question được sử dụng trong bao nhiêu Question
-select category_id, count(question_id)
-from Question
-group by category_id
-
--- q7:Thông kê mỗi Question được sử dụng trong bao nhiêu Exam
-select question_id, count(exam_id)
-from ExamQuestion
-group by question_id
-
--- q8: Lấy ra Question có nhiều câu trả lời nhất
-select question_id
-from Answer
-group by question_id
-order by count(answer_id) desc
-limit 1
-
--- q9: Thống kê số lượng account trong mỗi group
-select account_id, count(group_id)
-from GroupAccount
-group by account_id
-
--- q10: Tìm chức vụ có ít người nhất
-select position_id
-from Account
-group by position_id
-order by count(account_id)
-limit 1
-
--- q11:Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM
-SELECT 
-    department_id, 
-    COUNT(CASE WHEN position_name LIKE '%Account%' THEN 1 END) AS account_count,
-    COUNT(CASE WHEN position_name LIKE '%Developer%' THEN 1 END) AS developer_count,
-    COUNT(CASE WHEN position_name LIKE '%Manager%' THEN 1 END) AS manager_count
-FROM 
+-- q2: Tạo view có chứa thông tin các account tham gia vào nhiều group nhất
+CREATE OR REPLACE VIEW vw_GetAccount AS
+SELECT
+    a.account_id,
+    a.full_name,
+    COUNT(g.group_id) AS group_count
+FROM
     Account a
-INNER JOIN 
-    Position p ON a.position_id = p.position_id
-GROUP BY 
-    department_id;
+INNER JOIN
+    GroupAccount g ON a.account_id = g.account_id
+GROUP BY
+    a.account_id, a.full_name
+ORDER BY
+    group_count DESC
+LIMIT 1;
 
--- q12: Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của question, loại câu hỏi, ai là người tạo ra câu hỏi, câu trả lời là gì, ...
-select q.question_id, q.content, cq.category_name , tq.type_name as 'Type name', a.full_name as 'Creator name'
-from
-	Question q
-inner join
-	CategoryQuestion  cq on cq.category_id = q.category_id
-inner join 
-	TypeQuestion tq on tq.type_id = q.type_id
-inner join 
-	Account a on a.account_id = q.creator_id
+-- Create the view
+DROP VIEW IF EXISTS max_groups_account;
+CREATE VIEW max_groups_account AS
+SELECT
+    a.account_id,
+    a.email,
+    a.user_name,
+    a.full_name,
+    COUNT(ga.group_id) AS group_count
+FROM
+    Account a
+JOIN
+    GroupAccount ga ON a.account_id = ga.account_id
+GROUP BY
+    a.account_id, a.email, a.user_name, a.full_name
+HAVING
+    group_count = (SELECT MAX(group_count) FROM (SELECT account_id, COUNT(group_id) AS group_count FROM GroupAccount GROUP BY account_id) AS max_group_count);
 
--- q13: Lấy ra số lượng câu hỏi của mỗi loại tự luận hay trắc nghiệm
-select t.type_name, count(question_id)
+-- Query the view
+SELECT * FROM max_groups_account;
+
+-- q3: Tạo view có chứa câu hỏi có những content quá dài (content quá 30 từ được coi là quá dài) và xóa nó đi
+delete 
+from Question
+where length(content)>30;
+
+-- q4: Tạo view có chứa danh sách các phòng ban có nhiều nhân viên nhất
+
+update Account
+set department_id = 3
+where account_id = 4;
+
+Drop view if exists maxnv_department;
+Create view maxnv_department as
+select d.department_name, count(account_id)
+from Department d
+inner join Account a on a.department_id = d.department_id
+group by a.department_id
+HAVING count(a.department_id) = (SELECT MAX(countDEP_ID) AS maxDEP_ID FROM
+(SELECT count(A1.department_id) AS countDEP_ID FROM account A1
+GROUP BY A1.department_id) AS TB_countDepID);
+
+select *
+from maxnv_department
+
+CREATE VIEW DepartmentEmployeeCount AS
+SELECT
+    d.department_id,
+    d.department_name,
+    COUNT(a.account_id) AS employee_count
+FROM
+    Department d
+LEFT JOIN
+    Account a ON d.department_id = a.department_id
+GROUP BY
+    d.department_id, d.department_name
+ORDER BY
+    employee_count DESC;
+
+SELECT *
+FROM DepartmentEmployeeCount
+LIMIT 1;
+
+-- q5: Tạo view có chứa tất các các câu hỏi do user họ Nguyễn tạo
+Drop view if exists nguyen_employees;
+Create view nguyen_employees as
+select q.question_id, q.content, a.full_name
 from Question q
-inner join TypeQuestion t on q.type_id = t.type_id
-group by t.type_name;
+inner join Account a on a.account_id = q.creator_id
+where a.full_name like 'Bob%'
 
-
-    
+select *
+from nguyen_employees
 
 
 
@@ -352,3 +362,4 @@ select * from Department;
 select * from Position;
 select * from Question;
 select * from TypeQuestion;
+select * from GroupAccount;

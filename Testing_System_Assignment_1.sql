@@ -10,8 +10,8 @@ Create table Department (
 );
 
 -- Position table
-Drop table if exists Position;
-Create table Position (
+Drop table if exists `Position`;
+Create table `Position` (
 	position_id int NOT NULL AUTO_INCREMENT primary key,
     position_name nvarchar(50)
 );
@@ -31,8 +31,8 @@ Create table Account (
 );
 
 -- Group table
-Drop table if exists Group;
-Create table Group (
+Drop table if exists `Group`;
+Create table `Group` (
 	group_id int NOT NULL AUTO_INCREMENT primary key,
     group_name varchar(50),
     creator_id int,
