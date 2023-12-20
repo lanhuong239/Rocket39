@@ -269,10 +269,86 @@ END$$
 DELIMITER ;
 
 -- q2: Tạo store để in ra số lượng account trong mỗi group
+-- Drop the procedure if it exists
+DROP PROCEDURE IF EXISTS GetAccountInGroup;
+
+-- Change the delimiter
+DELIMITER $$
+
+-- Create the procedure
+CREATE PROCEDURE GetAccountInGroup(IN groupName VARCHAR(50))
+BEGIN
+    SELECT ga.group_id, g.group_name, COUNT(ga.account_id) AS account_count
+    FROM GroupAccount ga
+    INNER JOIN `Group` g ON ga.group_id = g.group_id
+    WHERE g.group_name = groupName
+    GROUP BY ga.group_id, g.group_name;
+END $$
+DELIMITER ;
 
 -- q3: Tạo store để thống kê mỗi type question có bao nhiêu question được tạo trong tháng hiện tại
 
+-- Change the delimiter
+DELIMITER $$
+
+-- Create the procedure
+CREATE PROCEDURE CurMonthTypeQ()
+BEGIN
+    DECLARE cur_month INT;
+    DECLARE cur_year INT;
+    
+    -- Get the current month and year
+    SELECT MONTH(CURDATE()) INTO cur_month;
+    SELECT YEAR(CURDATE()) INTO cur_year;
+    
+    -- Display the period
+    SELECT CONCAT('Statistics for ', DATE_FORMAT(CURDATE(), '%M %Y')) AS period;
+
+    -- Select the type_name, question_count, and current month
+    SELECT tq.type_name, COUNT(q.question_id) AS question_count, cur_month AS month
+    FROM Question q
+    INNER JOIN TypeQuestion tq ON q.type_id = tq.type_id
+    WHERE MONTH(q.create_date) = cur_month AND YEAR(q.create_date) = cur_year
+    GROUP BY q.type_id, tq.type_name;
+END $$
+
+-- Reset the delimiter
+DELIMITER ;
+
+
+
 -- q4: Tạo store để trả ra id của type question có nhiều câu hỏi nhất
+DROP PROCEDURE IF EXISTS GetMaxQuestionTypeQ;
+
+DELIMITER $$
+
+-- Create the procedure
+-- Đặt tên stored procedure là GetMostQuestionsTypeID
+CREATE PROCEDURE GetMostQuestionsTypeID()
+BEGIN
+    -- Tạo biến để lưu ID của loại câu hỏi có nhiều câu hỏi nhất
+    DECLARE most_questions_type_id INT;
+
+    -- Sử dụng câu truy vấn để lấy ID của loại câu hỏi có nhiều câu hỏi nhất
+    SELECT type_id INTO most_questions_type_id
+    FROM (
+        SELECT type_id, COUNT(question_id) AS question_count
+        FROM Question
+        GROUP BY type_id
+        ORDER BY question_count DESC
+        LIMIT 1
+    ) AS most_questions_type;
+
+    -- Trả kết quả
+    SELECT most_questions_type_id AS MostQuestionsTypeID;
+END$$
+
+-- Thiết lập Delimiter
+DELIMITER ;
+
+-- Gọi stored procedure
+CALL GetMostQuestionsTypeID();
+
 
 -- q5: Sử dụng store ở question 4 để tìm ra tên của type question
 
