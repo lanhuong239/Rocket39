@@ -1,6 +1,6 @@
 package entity;
 
 public class Department {
-    public int id;
+    public int departmentId;
     public String name;
 }
