@@ -1,6 +1,10 @@
 package entity;
 import java.time.LocalDate;
-import entity.*;
+
+import com.vti.entity.Account;
+import com.vti.entity.Department;
+import com.vti.entity.Group;
+import com.vti.entity.Position;
 
 /*
 Question 2:

@@ -1,4 +1,5 @@
-package entity;
+package com.vti.entity;
+
 import java.time.LocalDate;
 
 public class Exam {

@@ -1,4 +1,4 @@
-package entity;
+package com.vti.entity;
 
 public class TypeQuestion {
     public int id;

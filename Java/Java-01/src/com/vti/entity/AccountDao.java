@@ -1,4 +1,4 @@
-package entity;
+package com.vti.entity;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class AccountDao {
     }
 
     public Account getAccount(long id) {
-        entity.Account account = null;
+        Account account = null;
         try {
             rs = stmt.executeQuery("select * from Account where id = " + id);
             while (rs.next()) {
