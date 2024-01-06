@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Java/Javabuoi4/Exercise5/Exercise5.iml" filepath="$PROJECT_DIR$/Java/Javabuoi4/Exercise5/Exercise5.iml" />
       <module fileurl="file://$PROJECT_DIR$/Java/Java-01/Java-01.iml" filepath="$PROJECT_DIR$/Java/Java-01/Java-01.iml" />
       <module fileurl="file://$PROJECT_DIR$/Java/Javabuoi4/Javabuoi4.iml" filepath="$PROJECT_DIR$/Java/Javabuoi4/Javabuoi4.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Rocket42.iml" filepath="$PROJECT_DIR$/.idea/Rocket42.iml" />
