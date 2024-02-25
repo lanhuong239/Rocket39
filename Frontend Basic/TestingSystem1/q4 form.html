@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Registration Form</title>
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse; ?
+  }
+
+  td {
+    padding: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <h2>Register</h2>
+  <form action ="/submit_regist" method="post" enctype="multipart/form-data">
+    <table>
+      <tr>
+        <td><label for="fullname">Fullname:</label></td>
+        <td><input type="text" id="fullname" name="fullname" required></td>
+      </tr>
+      <tr>
+        <td><label for="username">Username:</label></td>
+        <td><input type="text" id="username" name="username" required></td>
+      </tr> 
+      <tr>
+        <td><label for="password">Password:</label></td>
+        <td><input type="text" id="password" name="password" required></td>
+      </tr>
+      <tr>
+        <td><label for="email">Email:</label></td>
+        <td><input type="text" id="email" name="email" required></td>
+      </tr>
+      <tr>
+        <td><label for="telnum">Telephone number:</label></td>
+        <td><input type="text" id="telnum" name="telnum" required></td>
+      </tr>
+          <!-- Radio Button Fields -->
+<tr>
+  <td><p>Input object</p></td>
+  <td>
+    <label for="student">Student</label>
+    <input type="radio" id="student" name="iobject" value="student">
+    <label for="teacher">Female</label>
+    <input type="radio" id="teacher" name="iobject" value="teacher">
+  </td>
+</tr>
+
+    <!-- Checkbox Fields -->
+<tr>
+  <td><p>Favorite: </p></td>
+  <td>
+    <label for="badminton">Badminton</label>
+    <input type="checkbox" id="badminton" name="favorites[]" value="badminton">
+    
+    <label for="volleyball">Volleyball</label>
+    <input type="checkbox" id="volleyball" name="favorites[]" value="volleyball">
+   
+    <label for="football">Football</label>
+    <input type="checkbox" id="football" name="favorites[]" value="football">
+  </td>
+</tr>
+
+    <!-- Dropdown Field -->
+<tr>
+  <td><label for="address">Address:</label></td>
+  <td>
+    <select id="address" name="address">
+      <option value="bacgiang">Bac Giang</option>
+      <option value="hanoi">Hanoi</option>
+      <option value="caobang">Cao Bang</option>
+    </select>
+  </td>
+</tr>
+
+    <!-- Birthday Field -->
+<tr>
+  <td><label for="birthday">Birthday:</label></td>
+  <td><input type="date" id="birthday" name="birthday" required></td>
+</tr>
+
+    <!-- Upload Picture Field -->
+    <tr>
+      <td><label for="profile-picture">Your Picture:</label></td>
+      <td><input type="file" id="profile-picture" name="profile_picture" accept="image/*"></td>
+    </tr>
+
+        <!-- Register Button -->
+        <tr>
+          <td colspan="2" align="center"><button type="submit">Register</button></td>
+        </tr>
+    
+    </table>
+
+  </form>
+
+</body>
+</html>

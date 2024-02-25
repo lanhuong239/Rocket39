@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>CRUD Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="program.css">
+    <link rel="stylesheet" href="navi.css">
+    <link rel="stylesheet" href="table.css">
+</head>
+
+<body>
+    <div class="header">
+
+    </div>
+
+    <div class="main">
+
+    </div>
+
+    <div class="footer">
+
+    </div>
+
+    <script>
+        $(function() {
+            $(".header").load("header.html");
+            $(".main").load("home.html");
+            $(".footer").load("footer.html");
+        });
+
+        function fillEmployeeTotable(employees) {
+            setTimeout(function() {
+                employees.forEach(function(employee) {
+                    $('tbody').append(
+                        '<tr>' +
+                        '<td>' + employee.name + '</td>' +
+                        '<td>' + employee.department + '</td>' +
+                        '<td>' + employee.phone + '</td>' +
+                        '<td>' +
+                        '<a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>' +
+                        '<a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>' +
+                        '</td>' +
+                        '</tr>'
+                    )
+                });
+            }, 1000);
+        }
+
+        function initEmployees() {
+            employees = [];
+            employees.push(new Employee('John Doe', 'Administration', '(171) 555-2222'));
+            employees.push(new Employee('Peter Parker', 'Customer Service', '(313) 555-5735'));
+            employees.push(new Employee('Hong Cong', 'Customer Service', '(313) 555-5735'));
+            return employees;
+        }
+        // thêm 
+        function addEmployees(){
+           
+        }
+        // xóa
+        function deleteEmployees(){
+           
+        }
+ 
+         //  sửa
+         function editEmployees(){
+           
+         }
+
+        function Employee(name, department, phone) {
+            this.name = name;
+            this.department = department;
+            this.phone = phone;
+        }
+
+        function clickHomeButton() {
+            $(".main").load("home.html");
+        }
+
+        function clickViewListEmployeeButton() {
+            $(".main").load("listemployees.html");
+            employees = initEmployees();
+            fillEmployeeTotable(employees);
+        }
+    </script>
+</body>
+
+</html>
